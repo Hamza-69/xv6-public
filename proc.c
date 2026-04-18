@@ -88,6 +88,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->priority = DEFAULT_PRIORITY;
 
   release(&ptable.lock);
 
@@ -324,26 +325,43 @@ scheduler(void)
 {
   struct proc *p;
   struct cpu *c = mycpu();
+  static int last_idx = NPROC - 1;
   c->proc = 0;
   
   for(;;){
+    struct proc *best;
+    int best_idx;
+    int k, idx;
+
     // Enable interrupts on this processor.
     sti();
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    best = 0;
+    best_idx = -1;
+    for(k = 0; k < NPROC; k++){
+      idx = (last_idx + 1 + k) % NPROC;
+      p = &ptable.proc[idx];
       if(p->state != RUNNABLE)
         continue;
+      if(best == 0 || p->priority < best->priority){
+        best = p;
+        best_idx = idx;
+      }
+    }
 
+    if(best){
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
-      c->proc = p;
-      switchuvm(p);
-      p->state = RUNNING;
+      c->proc = best;
+      switchuvm(best);
+      best->state = RUNNING;
+      last_idx = best_idx;
+      cprintf("sched: pid %d prio %d\n", best->pid, best->priority);
 
-      swtch(&(c->scheduler), p->context);
+      swtch(&(c->scheduler), best->context);
       switchkvm();
 
       // Process is done running for now.
