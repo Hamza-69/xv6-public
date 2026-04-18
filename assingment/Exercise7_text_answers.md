@@ -93,6 +93,7 @@ chosen."**
 ---
 
 # Exercise 7 — Part F: One-Page Report (XV6 Priority Scheduler)
+## Transparency Notice: This Report was written with the help of AI for organization purposes
 
 ## 1) What I changed
 
@@ -191,35 +192,30 @@ scheduler(void)
 
 ## 3) Output log + screenshot evidence plan (exact timing)
 
-Take screenshots at these exact moments while running xv6, then replace the placeholders below with your image paths.
-
 1. **Screenshot A (boot/compatibility):** right after boot when shell appears (`$` prompt).  
    Confirms kernel still boots and basic lifecycle/syscalls are not broken.
 
-```text
-[LOG PLACEHOLDER A: paste boot log up to shell prompt]
-```
+![Screenshot A — xv6 booted and shell prompt visible](SCREENSHOT_A.png)
 
-![Screenshot A — xv6 booted and shell prompt visible](PLACEHOLDER_SCREENSHOT_A.png)
+2. **Screenshot B (equal-priority RR):** during a tie test (two RUNNABLE processes with same smallest priority), capture interleaving/alternation lines. Logging was added temorarly for this. It shows 2 (actually 4, 2 pids of them matter only) pids running in turns. Command ran was 
 
-2. **Screenshot B (equal-priority RR):** during a tie test (two RUNNABLE processes with same smallest priority), capture interleaving/alternation lines.
-
-```text
-[LOG PLACEHOLDER B: paste lines showing tied processes alternating]
-Example pattern: P1, P2, P1, P2, ...
+```bash
+stressfs &
+stressfs &
 ```
 
 ![Screenshot B — equal-priority processes alternating](PLACEHOLDER_SCREENSHOT_B.png)
 
-3. **Screenshot C (mixed priorities):** while one higher-priority class and one lower-priority class coexist, capture that the lower-priority process does not run until higher-priority competitors yield/finish.
+3. **Screenshot C (mixed priorities):** capture a run where high-priority tasks dominate and lower-priority tasks appear later or less often.
+   For this test only, priorities are hardcoded in `allocproc()` as:
+   `pid >= 5 && even -> prio 1`, `pid >= 5 && odd -> prio 3`.
 
-```text
-[LOG PLACEHOLDER C: paste lines showing high priority dominates, ties share fairly]
-Example: only prio=1 tasks alternate first; prio=3 appears later.
+```bash
+stressfs &
+stressfs &
+stressfs &
 ```
 
+Take the screenshot when `sched:` logs show many `prio 1` selections first, with `prio 3` scheduled later/less frequently.
+
 ![Screenshot C — mixed case: higher priority dominates, ties share CPU](PLACEHOLDER_SCREENSHOT_C.png)
-
-## 4) Interpretation statement for report
-
-Observed behavior matches policy: scheduler always selects the RUNNABLE process with the smallest priority value, and when multiple RUNNABLE processes share that minimum value, execution alternates among them (round-robin via rotating scan start). In mixed-priority runs, higher-priority processes dominate while equal-priority processes share CPU fairly.
