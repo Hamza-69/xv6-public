@@ -204,7 +204,7 @@ stressfs &
 stressfs &
 ```
 
-![Screenshot B — equal-priority processes alternating](PLACEHOLDER_SCREENSHOT_B.png)
+![Screenshot B — equal-priority processes alternating](SCREENSHOT_B.png)
 
 3. **Screenshot C (mixed priorities):** capture a run where high-priority tasks dominate and lower-priority tasks appear later or less often.
    For this test only, priorities are hardcoded in `allocproc()` as:
@@ -218,4 +218,4 @@ stressfs &
 
 Take the screenshot when `sched:` logs show many `prio 1` selections first, with `prio 3` scheduled later/less frequently.
 
-![Screenshot C — mixed case: higher priority dominates, ties share CPU](PLACEHOLDER_SCREENSHOT_C.png)
+![Screenshot C — mixed case: higher priority dominates, ties share CPU](SCREENSHOT_C.png)
