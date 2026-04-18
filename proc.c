@@ -359,8 +359,6 @@ scheduler(void)
       switchuvm(best);
       best->state = RUNNING;
       last_idx = best_idx;
-      cprintf("sched: pid %d prio %d\n", best->pid, best->priority);
-
       swtch(&(c->scheduler), best->context);
       switchkvm();
 
